@@ -7,8 +7,8 @@ Here, you'll find daily solutions to **GeeksforGeeks problems**, complete with *
 
 | Date | Problem Name                   | Jump into Code                                  | Explanation                                    | Difficulty Level |
 |----------------|--------------------------------|--------------------------------------------------|------------------------------------------------|------------------|
-| 17 September 2025             | Decode the string             | [JavaScript](./src/Decode%20the%20string/Code/solution.js) | [Explanation](./src/Decode%20the%20string/Explanation/explanation.md)   | Medium             |
 | 18 September 2025             | Next Greater Element in Circular Array             | [C++](./src/Next%20Greater%20Element%20in%20Circular%20Array/Code/solution.cpp), [Java](./src/Next%20Greater%20Element%20in%20Circular%20Array/Code/solution.java), [JavaScript](./src/Next%20Greater%20Element%20in%20Circular%20Array/Code/solution.js), [Python3](./src/Next%20Greater%20Element%20in%20Circular%20Array/Code/solution.py) | [Explanation](./src/Next%20Greater%20Element%20in%20Circular%20Array/Explanation/explanation.md)   | Medium             |
+| 17 September 2025             | Decode the string             | [JavaScript](./src/Decode%20the%20string/Code/solution.js) | [Explanation](./src/Decode%20the%20string/Explanation/explanation.md)   | Medium             |
 
 ---
 
