@@ -26,7 +26,7 @@ Here, you'll find daily solutions to **GeeksforGeeks problems**, complete with *
 ## Contributors
 
 <p align="center"><a href="https://github.com/withaarzoo/GeeksforGeeks-Solution/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=withaarzoo/GeeksforGeeks-Solution" max={1000} columns={100} anon={1}/>
+  <img src="https://contrib.rocks/image?repo=withaarzoo/GeeksforGeeks-Solution&max=1000&columns=10&anon=1" />
 </a></p>
 
 ---
@@ -54,4 +54,5 @@ Stay connected and get updates on the latest solutions, explanations, and coding
 - 💬 **Telegram Group**: [Join our coding community](https://t.me/codewithaarzoo)  
 
 Follow along for **daily coding content, tips, and problem-solving strategies** 🚀
+
 
