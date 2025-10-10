@@ -7,6 +7,7 @@ Here, you'll find daily solutions to **GeeksforGeeks problems**, complete with *
 
 | Date | Problem Name                   | Jump into Code                                  | Explanation                                    | Difficulty Level |
 |----------------|--------------------------------|--------------------------------------------------|------------------------------------------------|------------------|
+| 10 October 2025             | ZigZag Tree Traversal             | [C++](./src/ZigZag%20Tree%20Traversal/Code/solution.cpp), [Java](./src/ZigZag%20Tree%20Traversal/Code/solution.java), [JavaScript](./src/ZigZag%20Tree%20Traversal/Code/solution.js), [Python3](./src/ZigZag%20Tree%20Traversal/Code/solution.py) | [Explanation](./src/ZigZag%20Tree%20Traversal/Explanation/explanation.md)   | Medium             |
 | 09 October 2025             | Postorder Traversal             | [C++](./src/Postorder%20Traversal/Code/solution.cpp), [Java](./src/Postorder%20Traversal/Code/solution.java), [JavaScript](./src/Postorder%20Traversal/Code/solution.js), [Python3](./src/Postorder%20Traversal/Code/solution.py) | [Explanation](./src/Postorder%20Traversal/Explanation/explanation.md)   | Easy             |
 | 08 October 2025             | Construct Tree from Preorder & Postorder             | [C++](./src/Construct%20Tree%20from%20Preorder%20&%20Postorder/Code/solution.cpp), [Java](./src/Construct%20Tree%20from%20Preorder%20&%20Postorder/Code/solution.java), [JavaScript](./src/Construct%20Tree%20from%20Preorder%20&%20Postorder/Code/solution.js), [Python3](./src/Construct%20Tree%20from%20Preorder%20&%20Postorder/Code/solution.py) | [Explanation](./src/Construct%20Tree%20from%20Preorder%20&%20Postorder/Explanation/explanation.md)   | Medium             |
 | 07 October 2025             | Bottom View of Binary Tree             | [C++](./src/Bottom%20View%20of%20Binary%20Tree/Code/solution.cpp), [Java](./src/Bottom%20View%20of%20Binary%20Tree/Code/solution.java), [JavaScript](./src/Bottom%20View%20of%20Binary%20Tree/Code/solution.js), [Python3](./src/Bottom%20View%20of%20Binary%20Tree/Code/solution.py) | [Explanation](./src/Bottom%20View%20of%20Binary%20Tree/Explanation/explanation.md)   | Medium             |
@@ -64,5 +65,3 @@ Stay connected and get updates on the latest solutions, explanations, and coding
 - 💬 **Telegram Group**: [Join our coding community](https://t.me/codewithaarzoo)  
 
 Follow along for **daily coding content, tips, and problem-solving strategies** 🚀
-
-
