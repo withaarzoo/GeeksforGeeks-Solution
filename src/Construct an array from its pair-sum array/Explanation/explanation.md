@@ -2,125 +2,133 @@
 
 ## Table of Contents
 
-* [Problem Summary](#problem-summary)
-* [Constraints](#constraints)
-* [Intuition](#intuition)
-* [Approach](#approach)
-* [Data Structures Used](#data-structures-used)
-* [Operations & Behavior Summary](#operations--behavior-summary)
-* [Complexity](#complexity)
-* [Multi-language Solutions](#multi-language-solutions)
+* ## Problem Summary
 
-  * [C++](#c)
-  * [Java](#java)
-  * [JavaScript](#javascript)
-  * [Python3](#python3)
-* [Step-by-step Detailed Explanation (C++, Java, JavaScript, Python3)](#step-by-step-detailed-explanation-c-java-javascript-python3)
-* [Examples](#examples)
-* [How to use / Run locally](#how-to-use--run-locally)
-* [Notes & Optimizations](#notes--optimizations)
-* [Author](#author)
+* ## Constraints
+
+* ## Intuition
+
+* ## Approach
+
+* ## Data Structures Used
+
+* ## Operations & Behavior Summary
+
+* ## Complexity
+
+* ## Multi-language Solutions
+
+  * ### C++
+
+  * ### Java
+
+  * ### JavaScript
+
+  * ### Python3
+
+* ## Step-by-step Detailed Explanation (C++, Java, JavaScript, Python3)
+
+* ## Examples
+
+* ## How to use / Run locally
+
+* ## Notes & Optimizations
+
+* ## Author
 
 ---
 
 ## Problem Summary
 
-Given a **pair-sum array** `arr[]` which contains the sums of all unordered pairs of elements of an unknown original array `res[]` in a fixed triangular order:
+Given a pair-sum array `arr[]` that was constructed by taking all pairwise sums of an unknown original array `res[]` of size `n` in a fixed order:
 
-* First all sums with `res[0]`: `res[0]+res[1], res[0]+res[2], ..., res[0]+res[n-1]`
-* Then sums with `res[1]` excluding `res[0]`: `res[1]+res[2], res[1]+res[3], ...`
-* And so on.
+```
+res[0]+res[1], res[0]+res[2], ..., res[0]+res[n-1],
+res[1]+res[2], res[1]+res[3], ...
+```
 
-From this `arr[]`, I need to reconstruct any valid original array `res[]` of size `n` such that the triangular pair-sum ordering of `res[]` matches `arr[]`.
+Reconstruct and return the original array `res[]`.
 
-Important note: `arr.length = m = n*(n-1)/2` (triangular number). We may assume input is valid.
+We assume the input `arr` length equals `n*(n-1)/2` for some integer `n` and that `arr` is ordered exactly as above.
 
 ---
 
 ## Constraints
 
-* `1 ≤ n ≤ 10^3` (original array size)
-* `1 ≤ arr[i] ≤ 10^9`
-* `m = arr.length = n*(n-1)/2`
-* Values and intermediate sums fit into 64-bit integers (use `long` / `long long` where needed).
+* Let `m = arr.length`. Then `m = n*(n-1)/2` for some integer `n >= 2`.
+* Values in `arr` fit in 32-bit signed integers (we use 64-bit internally when required).
+* The array `arr` is ordered as described above.
+* Problem variants may or may not require positive original elements; here we reconstruct according to the formula (no extra positivity checks unless requested).
+
+Typical bounds:
+
+* `1 <= n <= 10^3` (so `m` up to ~500k for n=1000) — but typical competitive tests are smaller.
 
 ---
 
 ## Intuition
 
-I thought about how the pair-sum array is produced. Because they list pair sums in rows:
+I thought: because of the fixed ordering of pair-sums, the first two sums and the (n-1)-th sum correspond to:
 
-* row 0 (length n-1): `res[0]+res[1], res[0]+res[2], ..., res[0]+res[n-1]`
-* row 1 (length n-2): `res[1]+res[2], ...`
+* `arr[0] = res[0] + res[1]`
+* `arr[1] = res[0] + res[2]`
+* `arr[n-1] = res[1] + res[2]`
 
-So the very first three relevant values in `arr` are:
-
-* `s01 = arr[0] = res[0] + res[1]`
-* `s02 = arr[1] = res[0] + res[2]`
-* `s12 = arr[n-1] = res[1] + res[2]` (since the first row has `n-1` items, the next element `arr[n-1]` is the first of row 1)
-
-Adding and subtracting these lets me isolate `res[0]`:
+From those three equations, `res[0]` can be solved:
 
 ```
-(s01 + s02 - s12) = 2 * res[0]
-=> res[0] = (s01 + s02 - s12) / 2
+res[0] = (arr[0] + arr[1] - arr[n-1]) / 2
 ```
 
-Once I know `res[0]`, for every `i >= 1`:
+Once `res[0]` is known, each `res[i]` is simply:
 
 ```
-arr[i-1] = res[0] + res[i]  =>  res[i] = arr[i-1] - res[0]
+res[i] = arr[i-1] - res[0]   for i = 1 .. n-1
 ```
 
-So we can reconstruct the entire original array in linear time.
+This gives the full original array in `O(n)` time (reconstruction). If you need to be defensive, you can regenerate all pair-sums and verify against the input `arr` (costs `O(n^2)`).
 
 ---
 
 ## Approach
 
-1. Let `m = len(arr)`. Compute `n` by solving `n*(n-1)/2 = m`:
+1. Compute `m = arr.length`.
+2. Solve `n` from quadratic: `n*(n-1)/2 = m` → `n = (1 + sqrt(1 + 8*m)) / 2`. (Use integer math / rounding.)
+3. If `n < 2` or `n` does not match `m`, handle edge cases or return an empty result.
+4. Calculate:
 
-   ```
-   n = (1 + sqrt(1 + 8*m)) / 2
-   ```
+   * `res0 = (arr[0] + arr[1] - arr[n - 1]) / 2` using 64-bit safe arithmetic.
+5. For `i` from `1` to `n-1`, set:
 
-   (Because m is triangular number.)
-2. If `n == 2`, only one pair-sum exists. Return a valid pair such as `[arr[0], 0]`.
-3. If `n >= 3`:
-
-   * Let `s01 = arr[0]`, `s02 = arr[1]`, `s12 = arr[n-1]`.
-   * Compute `res0 = (s01 + s02 - s12) // 2`.
-   * Set `res[0] = res0`. For `i = 1 .. n-1`: `res[i] = arr[i-1] - res0`.
-4. Return `res`.
-
-This approach uses only arithmetic and one pass to fill the result. It exploits the fixed order of pair sums.
+   * `res[i] = arr[i - 1] - res0`.
+6. Return `res`.
+7. (Optional) Regenerate pair-sums in the same order and compare to `arr` to confirm correctness (useful for malformed inputs).
 
 ---
 
 ## Data Structures Used
 
-* Input: array/list of integers (`arr[]`) — pair-sums.
-* Output: array/list of integers (`res[]`) — reconstructed original array.
-* No extra data structures beyond the output array; only a few scalar variables for arithmetic.
+* Arrays / vectors / ArrayList — size `n`.
+* Primitive integer types (use 64-bit internally where sums might overflow 32-bit).
 
 ---
 
 ## Operations & Behavior Summary
 
-* Compute `n` from `m` using square root (constant work).
-* Index into `arr` to read the first two sums and the `(n-1)`-th sum (constant).
-* Compute `res[0]` by integer arithmetic (constant).
-* One linear pass of length `n` to fill `res[]`.
-* Output the array.
-
-The program expects the triangular ordering of `arr[]` as described; otherwise results will be incorrect.
+* Input: Ordered pair-sum array `arr` of length `m`.
+* Operation: Deduce `n`, compute `res[0]` from first three pair-sums, then compute `res[1..n-1]`.
+* Output: The reconstructed `res[]` in the same language-appropriate container.
+* Edge cases handled: `m = 0`, `n = 2` (single pair-sum).
 
 ---
 
 ## Complexity
 
-* **Time Complexity:** `O(n)` where `n` is the size of the original array. (Computing `n` from `m` is `O(1)`. Reconstructing `n` elements takes `O(n)`.)
-* **Space Complexity:** `O(n)` to store the output original array. Auxiliary extra space is `O(1)`.
+* **Time Complexity:**
+
+  * Reconstruction: `O(n)` where `n` is length of original array (`m = n*(n-1)/2`).
+  * If verification (regenerate pair sums) is done: `O(n^2)` — necessary if you must validate input.
+* **Space Complexity:** `O(n)` for the result array.
 
 ---
 
@@ -132,349 +140,238 @@ The program expects the triangular ordering of `arr[]` as described; otherwise r
 #include <bits/stdc++.h>
 using namespace std;
 
-/*
- Reconstruct original array 'res' from pair-sum array 'arr' (triangular ordering).
- Uses 64-bit integers to avoid overflow.
-*/
 class Solution {
   public:
-    vector<long long> constructArr(const vector<long long>& arr) {
+    vector<int> constructArr(vector<int>& arr) {
         long long m = arr.size();
-        if (m == 0) return {};
-
-        // Solve n*(n-1)/2 = m  =>  n = (1 + sqrt(1 + 8*m)) / 2
         long long disc = 1 + 8 * m;
-        long long sq = (long long) floor(sqrt((long double)disc));
+        long long sq = (long long) llround(sqrt((long double)disc));
         long long n = (1 + sq) / 2;
+        if (n < 2) return vector<int>((size_t)n);
 
-        if (n < 2) return {};
-
-        if (n == 2) {
-            // Only one pair-sum -> return a valid pair [s, 0]
-            return {arr[0], 0};
-        }
-
-        // s01 = arr[0] = res0 + res1
-        // s02 = arr[1] = res0 + res2
-        // s12 = arr[n-1] = res1 + res2
-        long long s01 = arr[0];
-        long long s02 = arr[1];
-        long long s12 = arr[n - 1];
-
-        // res0 = (s01 + s02 - s12) / 2
-        long long res0 = (s01 + s02 - s12) / 2;
-
-        vector<long long> res(n);
-        res[0] = res0;
+        vector<int> res((size_t)n, 0);
+        long long num = (long long)arr[0] + (long long)arr[1] - (long long)arr[n-1];
+        long long r0 = num / 2;
+        res[0] = (int)r0;
         for (long long i = 1; i < n; ++i) {
-            // arr[i-1] = res0 + res[i]  => res[i] = arr[i-1] - res0
-            res[i] = arr[i - 1] - res0;
+            long long val = (long long)arr[i-1] - r0;
+            res[(size_t)i] = (int)val;
         }
         return res;
     }
 };
-
-// Example usage (main function)
-int main() {
-    vector<long long> pairSums = {4, 5, 3}; // example input
-    Solution sol;
-    vector<long long> original = sol.constructArr(pairSums);
-    for (auto v : original) cout << v << " ";
-    cout << "\n";
-    return 0;
-}
 ```
-
----
 
 ### Java
 
 ```java
-import java.util.*;
-/*
- Reconstruct original array 'res' from pair-sum array 'arr' (triangular ordering).
- Use long to avoid overflow.
-*/
+import java.util.ArrayList;
+
 class Solution {
-    public ArrayList<Long> constructArr(long[] arr) {
+    public ArrayList<Integer> constructArr(int[] arr) {
+        ArrayList<Integer> res = new ArrayList<>();
         int m = arr.length;
-        ArrayList<Long> resList = new ArrayList<>();
-        if (m == 0) return resList;
+        if (m == 0) return res;
 
         long disc = 1L + 8L * m;
-        long sq = (long) Math.floor(Math.sqrt(disc));
-        long n = (1 + sq) / 2;
-
-        if (n < 2) return resList;
+        long s = (long) Math.sqrt(disc);
+        int n = (int) ((1 + s) / 2);
 
         if (n == 2) {
-            // only one pair-sum -> return [s, 0]
-            resList.add(arr[0]);
-            resList.add(0L);
-            return resList;
+            res.add(0);
+            res.add(arr[0]);
+            return res;
         }
 
-        long s01 = arr[0];            // res0 + res1
-        long s02 = arr[1];            // res0 + res2
-        long s12 = arr[(int)(n - 1)]; // res1 + res2
+        long s01 = arr[0];
+        long s02 = arr[1];
+        long s12 = arr[n - 1];
 
-        long res0 = (s01 + s02 - s12) / 2;
-
-        resList.add(res0);
-        for (int i = 1; i < n; ++i) {
-            long val = arr[i - 1] - res0; // arr[i-1] = res0 + res[i]
-            resList.add(val);
+        long r0 = (s01 + s02 - s12) / 2L;
+        res.add((int) r0);
+        for (int i = 1; i < n; i++) {
+            long val = (long) arr[i - 1] - r0;
+            res.add((int) val);
         }
-        return resList;
-    }
-
-    // Example usage
-    public static void main(String[] args) {
-        long[] pairSums = {4, 5, 3};
-        Solution sol = new Solution();
-        ArrayList<Long> original = sol.constructArr(pairSums);
-        for (Long v : original) System.out.print(v + " ");
-        System.out.println();
+        return res;
     }
 }
 ```
 
----
-
 ### JavaScript
 
 ```javascript
-/*
- Reconstruct original array 'res' from pair-sum array 'arr' (triangular ordering).
- Uses Number (double) but works with integers within safe range.
-*/
 class Solution {
     constructArr(arr) {
         const m = arr.length;
         if (m === 0) return [];
 
         const disc = 1 + 8 * m;
-        const sq = Math.floor(Math.sqrt(disc));
-        const n = Math.floor((1 + sq) / 2);
+        const s = Math.floor(Math.sqrt(disc));
+        const n = Math.floor((1 + s) / 2);
 
-        if (n < 2) return [];
+        if (n === 2) return [0, arr[0]];
 
-        if (n === 2) {
-            // only one pair-sum -> return [s, 0]
-            return [arr[0], 0];
-        }
+        const s01 = arr[0], s02 = arr[1], s12 = arr[n - 1];
+        const r0 = Math.floor((s01 + s02 - s12) / 2);
 
-        const s01 = arr[0];      // res0 + res1
-        const s02 = arr[1];      // res0 + res2
-        const s12 = arr[n - 1];  // res1 + res2
-
-        const res0 = Math.floor((s01 + s02 - s12) / 2);
-
-        const res = new Array(n);
-        res[0] = res0;
-        for (let i = 1; i < n; ++i) {
-            res[i] = arr[i - 1] - res0; // arr[i-1] = res0 + res[i]
-        }
+        const res = new Array(n).fill(0);
+        res[0] = r0;
+        for (let i = 1; i < n; ++i) res[i] = arr[i - 1] - r0;
         return res;
     }
 }
-
-// Example usage
-const pairSums = [4, 5, 3];
-const sol = new Solution();
-console.log(sol.constructArr(pairSums)); // prints reconstructed array
 ```
-
----
 
 ### Python3
 
 ```python
-import math
-
 class Solution:
     def constructArr(self, arr):
+        from math import isqrt
         m = len(arr)
         if m == 0:
             return []
-
-        # Solve n*(n-1)//2 = m  => n = (1 + sqrt(1 + 8*m)) // 2
         disc = 1 + 8 * m
-        sq = int(math.isqrt(disc))
-        n = (1 + sq) // 2
-
-        if n < 2:
-            return []
+        s = isqrt(disc)
+        n = (1 + s) // 2
 
         if n == 2:
-            # only one pair-sum -> return [s, 0]
-            return [arr[0], 0]
+            return [0, arr[0]]
 
-        # arr[0] = res0 + res1
-        # arr[1] = res0 + res2
-        # arr[n-1] = res1 + res2
-        s01 = arr[0]
-        s02 = arr[1]
-        s12 = arr[n - 1]
+        s01 = arr[0]; s02 = arr[1]; s12 = arr[n - 1]
+        a1 = (s01 + s02 - s12) // 2
 
-        res0 = (s01 + s02 - s12) // 2
-
-        res = [0] * n
-        res[0] = res0
+        original = [0] * n
+        original[0] = a1
         for i in range(1, n):
-            # arr[i-1] = res0 + res[i] => res[i] = arr[i-1] - res0
-            res[i] = arr[i - 1] - res0
-        return res
-
-# Example usage
-if __name__ == "__main__":
-    pairSums = [4, 5, 3]
-    sol = Solution()
-    print(sol.constructArr(pairSums))
+            original[i] = arr[i - 1] - a1
+        return original
 ```
 
 ---
 
 ## Step-by-step Detailed Explanation (C++, Java, JavaScript, Python3)
 
-I'll explain the logic line-by-line and the important parts as if I'm teaching a friend.
+> The same logical steps apply in every language; below I explain line-by-line in a language-agnostic manner and call out small syntax differences where needed.
 
-### 1) Determine `n` from length `m`
+1. **Compute `m`**
 
-* We know `m = n*(n-1)/2` because there are that many unordered pairs.
-* Solve the quadratic equation for `n`:
+   * `m = arr.length` (number of pair-sums).
 
-  ```
-  n^2 - n - 2m = 0
-  n = (1 + sqrt(1 + 8*m)) / 2
-  ```
+2. **Compute `n`**
 
-* Use integer sqrt and integer division. The input guarantees `m` is triangular.
+   * Solve `n*(n-1)/2 = m`.
+   * Rearranged: `n = (1 + sqrt(1 + 8*m)) / 2`.
+   * Compute `disc = 1 + 8*m`, then integer `s = floor(sqrt(disc))`, finally `n = (1 + s) / 2`.
+   * Implementation note: use integer math or careful rounding so `n` is an integer when input is valid.
 
-### 2) Handle small `n`
+3. **Handle edge cases**
 
-* If `n == 2`, there's only one pair sum `s = arr[0]`. Any two numbers that sum to `s` are valid — I choose `[s, 0]` as a simple valid reconstruction.
+   * If `m == 0` return empty (no data).
+   * If `n == 2`, there is exactly one sum `S = arr[0]`. Any two numbers that sum to `S` will do — the examples above pick `[0, S]` for simplicity. (If you need positive integers, use `[1, S-1]` instead.)
 
-### 3) Extract first three key sums
+4. **Compute `res[0]`**
 
-* Because of triangular ordering:
+   * Using the three sums:
 
-  * `s01 = arr[0]` is `res[0]+res[1]`
-  * `s02 = arr[1]` is `res[0]+res[2]`
-  * `s12 = arr[n-1]` is `res[1]+res[2]`
-    (The first row contains `n-1` items — those are `res[0] + res[1..n-1]`. So the next element `arr[n-1]` begins the second row.)
+     * `s01 = arr[0] = res0 + res1`
+     * `s02 = arr[1] = res0 + res2`
+     * `s12 = arr[n-1] = res1 + res2`
+   * Solve: `res0 = (s01 + s02 - s12) / 2`.
 
-### 4) Compute `res[0]`
+5. **Compute the rest**
 
-* Add first two sums and subtract third:
+   * For each `i` in `1..n-1`:
+     `res[i] = arr[i-1] - res0` (since `arr[i-1] = res0 + res[i]`).
 
-  ```
-  s01 + s02 - s12 = (res0+res1) + (res0+res2) - (res1+res2) = 2*res0
-  ```
+6. **Return**
 
-  So:
+   * Return the result container (vector/ArrayList/array/list) filled with reconstructed values.
 
-  ```
-  res0 = (s01 + s02 - s12) / 2
-  ```
+7. **(Optional verification)**
 
-* Use integer division — values are integers if input is consistent.
-
-### 5) Compute remaining elements
-
-* For each `i >= 1`, `arr[i-1] = res0 + res[i]`. So:
-
-  ```
-  res[i] = arr[i-1] - res0
-  ```
-
-* Fill the result array in a single pass.
-
-### 6) Return `res`
+   * To be defensive: regenerate all pair sums in the exact order and compare with `arr`. If any mismatch, handle it (return empty or raise error). This step costs `O(n^2)`.
 
 ---
 
 ## Examples
 
-1. Input: `arr = [4, 5, 3]`
+Example 1:
 
-   * Compute `m=3`. Solve `n*(n-1)/2 = 3` -> `n=3`.
-   * `s01 = 4`, `s02 = 5`, `s12 = arr[2] = 3`.
-   * `res0 = (4 + 5 - 3) / 2 = 3`
-   * `res = [3, arr[0]-3, arr[1]-3] = [3, 1, 2]`
-   * Output: `[3, 1, 2]` (pair sums: 3+1=4, 3+2=5, 1+2=3)
+* Input: `arr = [4, 5, 3]`
+  Here `m = 3` → `n = 3`.
 
-2. Input: `arr = [3]`
+  * `res0 = (4 + 5 - 3) / 2 = 3`
+  * `res[1] = arr[0] - res0 = 4 - 3 = 1`
+  * `res[2] = arr[1] - res0 = 5 - 3 = 2`
+* Output: `[3, 1, 2]`
 
-   * `m=1`, `n=2`
-   * Return `[3, 0]` (one valid reconstruction)
+Example 2 (single sum):
+
+* Input: `arr = [10]`
+  `m = 1` → `n = 2`. Our simple reconstruction returns `[0, 10]` (or `[1, 9]` if you require positive elements).
+* Output: `[0, 10]` (or choose `[1,9]` if positives required)
 
 ---
 
 ## How to use / Run locally
 
-1. **C++**
+### C++
 
-   * Save the code as `construct_from_pairs.cpp`.
-   * Compile:
+1. Put the `Solution` class into the required driver (or add a `main()` to test).
+2. Compile:
 
-     ```
-     g++ -std=c++17 construct_from_pairs.cpp -O2 -o construct
-     ```
+   ```bash
+   g++ -std=c++17 -O2 solution.cpp -o sol
+   ./sol
+   ```
 
-   * Run:
+### Java
 
-     ```
-     ./construct
-     ```
+1. Place `Solution` class in `Solution.java`.
+2. A driver should call `new Solution().constructArr(arr)`.
+3. Compile & run:
 
-2. **Java**
+   ```bash
+   javac Solution.java
+   java Main   # where Main sets up test arrays and prints result
+   ```
 
-   * Save as `Solution.java`.
-   * Compile:
+### JavaScript (Node.js)
 
-     ```
-     javac Solution.java
-     ```
+1. Put the `Solution` class into `solution.js` and create a small driver that constructs `arr` and prints `new Solution().constructArr(arr)`.
+2. Run:
 
-   * Run:
+   ```bash
+   node solution.js
+   ```
 
-     ```
-     java Solution
-     ```
+### Python3
 
-3. **JavaScript (Node.js)**
+1. Put the `Solution` class in `solution.py` and add a snippet:
 
-   * Save as `solution.js`.
-   * Run:
+   ```python
+   if __name__ == "__main__":
+       s = Solution()
+       print(s.constructArr([4,5,3]))
+   ```
 
-     ```
-     node solution.js
-     ```
+2. Run:
 
-4. **Python3**
-
-   * Save as `solution.py`.
-   * Run:
-
-     ```
-     python3 solution.py
-     ```
-
-Replace example `pairSums` arrays in the `main` / example sections to test other inputs.
+   ```bash
+   python3 solution.py
+   ```
 
 ---
 
 ## Notes & Optimizations
 
-* I use 64-bit integers (`long` / `long long`) in C++/Java to avoid overflow when computing sums.
-* The method assumes the input triangular ordering is exact. If input may be shuffled, a different approach (sorting and/or multiset reconstructions) would be required.
-* This approach is optimal for this problem statement: `O(n)` time and `O(n)` space.
-* Edge cases:
-
-  * If `m = 0` => return `[]`.
-  * If `n*(n-1)/2 != m` (invalid input), the computed `n` might be wrong; in robust code, validate `n` equals `(1 + sqrt(1+8m))/2` and is integer.
-* For very large inputs, ensure integer arithmetic does not overflow; use 64-bit integers.
+* The reconstruction itself is `O(n)` which is fast compared to the input size `m = O(n^2)`. Reconstructing `n` values from `m` inputs is minimal work.
+* Use 64-bit (`long long`, `long`) arithmetic when computing sums or intermediate values to avoid overflow if inputs are large.
+* If you must validate that the input is well-formed, regenerate pair sums in the same order and compare — this costs `O(n^2)` and may be expensive for large `n`, but is necessary for untrusted input.
+* If the judge requires positive elements (≥1), add a check for each reconstructed value and handle `n==2` separately (return `[1, S-1]` instead of `[0,S]`).
+* If the pair-sum ordering differs from the one assumed here, the formula will be different — ensure ordering matches the problem statement.
 
 ---
 
