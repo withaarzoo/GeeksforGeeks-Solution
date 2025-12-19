@@ -7,6 +7,7 @@ Here, you'll find daily solutions to **GeeksforGeeks problems**, complete with *
 
 | Date | Problem Name                   | Jump into Code                                  | Explanation                                    | Difficulty Level |
 |----------------|--------------------------------|--------------------------------------------------|------------------------------------------------|------------------|
+| 19 December 2025              | Bus Conductor                       | [C++](./src/Bus%20Conductor/Code/solution.cpp), [Java](./src/Bus%20Conductor/Code/solution.java), [JavaScript](./src/Bus%20Conductor/Code/solution.js), [Python3](./src/Bus%20Conductor/Code/solution.py) | [Explanation](./src/Bus%20Conductor/Explanation/explanation.md)    | Easy               |
 | 18 December 2025              | Sort in specific order              | [C++](./src/Sort%20in%20specific%20order/Code/solution.cpp), [Java](./src/Sort%20in%20specific%20order/Code/solution.java), [JavaScript](./src/Sort%20in%20specific%20order/Code/solution.js), [Python3](./src/Sort%20in%20specific%20order/Code/solution.py) | [Explanation](./src/Sort%20in%20specific%20order/Explanation/explanation.md)    | Medium             |
 | 17 December 2025              | Overlapping Intervals               | [C++](./src/Overlapping%20Intervals/Code/solution.cpp), [Java](./src/Overlapping%20Intervals/Code/solution.java), [JavaScript](./src/Overlapping%20Intervals/Code/solution.js), [Python3](./src/Overlapping%20Intervals/Code/solution.py) | [Explanation](./src/Overlapping%20Intervals/Explanation/explanation.md)    | Medium             |
 | 16 December 2025              | Strings Rotations of Each Other     | [C++](./src/Strings%20Rotations%20of%20Each%20Other/Code/solution.cpp), [Java](./src/Strings%20Rotations%20of%20Each%20Other/Code/solution.java), [JavaScript](./src/Strings%20Rotations%20of%20Each%20Other/Code/solution.js), [Python3](./src/Strings%20Rotations%20of%20Each%20Other/Code/solution.py) | [Explanation](./src/Strings%20Rotations%20of%20Each%20Other/Explanation/explanation.md)    | Medium             |
@@ -134,4 +135,3 @@ Stay connected and get updates on the latest solutions, explanations, and coding
 - 💬 **Telegram Group**: [Join our coding community](https://t.me/codewithaarzoo)  
 
 Follow along for **daily coding content, tips, and problem-solving strategies** 🚀
-
