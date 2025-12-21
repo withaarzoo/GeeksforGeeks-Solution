@@ -1,0 +1,73 @@
+class Solution
+{
+public:
+    // Binary search to find first occurrence of x in range [l, r]
+    int firstOccurrence(vector<int> &arr, int l, int r, int x)
+    {
+        int ans = -1;
+        while (l <= r)
+        {
+            int mid = l + (r - l) / 2;
+            if (arr[mid] == x)
+            {
+                ans = mid;
+                r = mid - 1; // move left
+            }
+            else if (arr[mid] < x)
+            {
+                l = mid + 1;
+            }
+            else
+            {
+                r = mid - 1;
+            }
+        }
+        return ans;
+    }
+
+    // Binary search to find last occurrence of x in range [l, r]
+    int lastOccurrence(vector<int> &arr, int l, int r, int x)
+    {
+        int ans = -1;
+        while (l <= r)
+        {
+            int mid = l + (r - l) / 2;
+            if (arr[mid] == x)
+            {
+                ans = mid;
+                l = mid + 1; // move right
+            }
+            else if (arr[mid] < x)
+            {
+                l = mid + 1;
+            }
+            else
+            {
+                r = mid - 1;
+            }
+        }
+        return ans;
+    }
+
+    vector<int> countXInRange(vector<int> &arr, vector<vector<int>> &queries)
+    {
+        vector<int> result;
+
+        for (auto &q : queries)
+        {
+            int l = q[0], r = q[1], x = q[2];
+
+            int first = firstOccurrence(arr, l, r, x);
+            if (first == -1)
+            {
+                result.push_back(0);
+                continue;
+            }
+
+            int last = lastOccurrence(arr, l, r, x);
+            result.push_back(last - first + 1);
+        }
+
+        return result;
+    }
+};
