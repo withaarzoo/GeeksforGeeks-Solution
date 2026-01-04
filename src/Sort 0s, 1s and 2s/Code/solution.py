@@ -4,6 +4,7 @@ class Solution:
         mid = 0
         high = len(arr) - 1
 
+        # Process elements in one pass
         while mid <= high:
             if arr[mid] == 0:
                 arr[low], arr[mid] = arr[mid], arr[low]

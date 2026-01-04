@@ -1,3 +1,7 @@
+/**
+ * @param {number[]} arr
+ * @returns {void}
+ */
 class Solution {
   sort012(arr) {
     let low = 0,

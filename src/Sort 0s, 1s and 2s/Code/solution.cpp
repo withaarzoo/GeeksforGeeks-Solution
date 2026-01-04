@@ -6,7 +6,7 @@ public:
         int low = 0, mid = 0;
         int high = arr.size() - 1;
 
-        // Traverse the array till mid crosses high
+        // Traverse the array only once
         while (mid <= high)
         {
             if (arr[mid] == 0)
