@@ -3,9 +3,11 @@
  * @param {number} k
  * @returns {number}
  */
+
 class Solution {
   maxSubarrayXOR(arr, k) {
     let n = arr.length;
+
     let currXor = 0;
 
     // XOR of first window
@@ -15,10 +17,14 @@ class Solution {
 
     let maxXor = currXor;
 
-    // Slide the window
+    // Sliding window
     for (let i = k; i < n; i++) {
-      currXor ^= arr[i - k]; // remove left
-      currXor ^= arr[i]; // add right
+      // Remove outgoing element
+      currXor ^= arr[i - k];
+
+      // Add incoming element
+      currXor ^= arr[i];
+
       maxXor = Math.max(maxXor, currXor);
     }
 

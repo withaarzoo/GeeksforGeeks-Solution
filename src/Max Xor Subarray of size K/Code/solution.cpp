@@ -5,7 +5,7 @@ public:
     {
         int n = arr.size();
 
-        // XOR of first window
+        // Step 1: compute XOR of first window
         int currXor = 0;
         for (int i = 0; i < k; i++)
         {
@@ -14,15 +14,16 @@ public:
 
         int maxXor = currXor;
 
-        // Slide the window
+        // Step 2: slide the window
         for (int i = k; i < n; i++)
         {
-            // Remove the left element
+            // remove element leaving the window
             currXor ^= arr[i - k];
 
-            // Add the new right element
+            // add new element entering the window
             currXor ^= arr[i];
 
+            // update maximum
             maxXor = max(maxXor, currXor);
         }
 

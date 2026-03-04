@@ -21,100 +21,97 @@
 * Notes & Optimizations
 * Author
 
----
-
 ## Problem Summary
 
-Given an integer array `arr[]` and an integer `k`, the task is to find the **maximum XOR value** of any **subarray of size k**.
+Given an integer array `arr` and a number `k`, the task is to find the maximum XOR value of any subarray having exactly `k` elements.
 
-A subarray is a continuous part of the array.
-We must consider only those subarrays whose length is exactly `k`.
+A subarray means a contiguous part of the array. We must consider every possible subarray of length `k` and compute its XOR. Among all those values, we return the maximum XOR.
 
----
+Example
+
+Input
+
+arr = [2, 5, 8, 1, 1, 3]
+k = 3
+
+Output
+
+15
+
+Explanation
+
+The XOR of the first subarray [2, 5, 8] is 15, which is the maximum among all subarrays of size 3.
 
 ## Constraints
 
-* 1 ≤ arr.size() ≤ 10⁶
-* 0 ≤ arr[i] ≤ 10⁶
-* 1 ≤ k ≤ arr.size()
-
-These constraints clearly tell me that:
-
-* A brute-force approach will not work.
-* I need a linear time solution.
-
----
+1 ≤ arr.size ≤ 10^6
+0 ≤ arr[i] ≤ 10^6
+1 ≤ k ≤ arr.size
 
 ## Intuition
 
-When I read the problem, I noticed that the subarray size is fixed.
+When I first looked at the problem, I noticed the subarray size is fixed. That means I only need to check subarrays that contain exactly `k` elements.
 
-So instead of checking every possible subarray again and again,
-I thought about using a **sliding window**.
+The straightforward approach would be to compute XOR for every possible subarray of size `k`. However, recalculating XOR every time would take too long when the array size is large.
 
-XOR has a special property:
+Then I remembered a property of XOR.
 
-* `x ^ x = 0`
-* XOR is reversible
+A ^ B ^ B = A
 
-This means I can remove the left element and add the right element using XOR in constant time.
+This means if we XOR a value twice, it cancels itself.
 
-That made the solution very clear:
-
-* Calculate XOR for the first window
-* Slide the window one step at a time
-* Update XOR efficiently
-* Track the maximum value
-
----
+Because of this property, I realized I can maintain a sliding window of size `k`. When the window moves forward, I remove the outgoing element using XOR and add the incoming element using XOR. This allows the XOR value to update in constant time.
 
 ## Approach
 
-1. Compute XOR of the first `k` elements.
-2. Store it as the initial answer.
-3. Slide the window from left to right.
-4. For every move:
+1. Compute the XOR of the first `k` elements.
+2. Store this value as the current window XOR.
+3. Also store it as the current maximum XOR.
+4. Slide the window one position at a time.
+5. When the window moves:
 
-   * Remove the element leaving the window using XOR.
-   * Add the new element entering the window using XOR.
-5. Update the maximum XOR.
-6. Return the final result.
-
-This way, I only traverse the array once.
-
----
+   * Remove the element leaving the window using XOR
+   * Add the element entering the window using XOR
+6. Update the maximum XOR if the current XOR is larger.
+7. Continue until the array ends.
+8. Return the maximum XOR found.
 
 ## Data Structures Used
 
-No extra data structures are used.
+Array
 
-Only basic variables are required:
+The input array is used directly.
 
-* Integer variables for XOR calculation
-* One variable to store the maximum result
+Variables
 
----
+Two variables are used to track
+
+* current window XOR
+* maximum XOR value
+
+No additional data structures are required.
 
 ## Operations & Behavior Summary
 
-* XOR calculation happens in O(1)
-* Sliding window moves one step at a time
-* No nested loops
-* No extra memory usage
-* Fully optimized for large input sizes
-
----
+1. Compute XOR of the first window.
+2. Slide the window across the array.
+3. Remove outgoing element using XOR.
+4. Add incoming element using XOR.
+5. Update maximum XOR value.
 
 ## Complexity
 
-**Time Complexity:** O(n)
-Here `n` is the number of elements in the array.
-Each element is processed only once.
+Time Complexity
 
-**Space Complexity:** O(1)
-No extra space is used apart from variables.
+O(n)
 
----
+Where `n` is the size of the array. Each element is processed only once.
+
+Space Complexity
+
+O(1)
+
+Only a few variables are used. No extra memory structures are required.
 
 ## Multi-language Solutions
 
@@ -122,17 +119,18 @@ No extra space is used apart from variables.
 
 ```cpp
 class Solution {
-  public:
+public:
     int maxSubarrayXOR(vector<int>& arr, int k) {
+        int n = arr.size();
+
         int currXor = 0;
 
-        for (int i = 0; i < k; i++) {
+        for(int i = 0; i < k; i++)
             currXor ^= arr[i];
-        }
 
         int maxXor = currXor;
 
-        for (int i = k; i < arr.size(); i++) {
+        for(int i = k; i < n; i++) {
             currXor ^= arr[i - k];
             currXor ^= arr[i];
             maxXor = max(maxXor, currXor);
@@ -143,22 +141,22 @@ class Solution {
 };
 ```
 
----
-
 ### Java
 
 ```java
 class Solution {
     public int maxSubarrayXOR(int[] arr, int k) {
+
+        int n = arr.length;
+
         int currXor = 0;
 
-        for (int i = 0; i < k; i++) {
+        for(int i = 0; i < k; i++)
             currXor ^= arr[i];
-        }
 
         int maxXor = currXor;
 
-        for (int i = k; i < arr.length; i++) {
+        for(int i = k; i < n; i++) {
             currXor ^= arr[i - k];
             currXor ^= arr[i];
             maxXor = Math.max(maxXor, currXor);
@@ -168,23 +166,23 @@ class Solution {
     }
 }
 ```
-
----
 
 ### JavaScript
 
 ```javascript
 class Solution {
     maxSubarrayXOR(arr, k) {
+
+        let n = arr.length;
+
         let currXor = 0;
 
-        for (let i = 0; i < k; i++) {
+        for(let i = 0; i < k; i++)
             currXor ^= arr[i];
-        }
 
         let maxXor = currXor;
 
-        for (let i = k; i < arr.length; i++) {
+        for(let i = k; i < n; i++) {
             currXor ^= arr[i - k];
             currXor ^= arr[i];
             maxXor = Math.max(maxXor, currXor);
@@ -195,13 +193,14 @@ class Solution {
 }
 ```
 
----
-
 ### Python3
 
 ```python
 class Solution:
     def maxSubarrayXOR(self, arr, k):
+
+        n = len(arr)
+
         curr_xor = 0
 
         for i in range(k):
@@ -209,7 +208,7 @@ class Solution:
 
         max_xor = curr_xor
 
-        for i in range(k, len(arr)):
+        for i in range(k, n):
             curr_xor ^= arr[i - k]
             curr_xor ^= arr[i]
             max_xor = max(max_xor, curr_xor)
@@ -217,81 +216,98 @@ class Solution:
         return max_xor
 ```
 
----
-
 ## Step-by-step Detailed Explanation
 
-1. I first calculate the XOR of the first `k` elements.
-2. This gives me the XOR of the first valid subarray.
-3. I store it as the maximum result for now.
-4. Then I start sliding the window:
+First we compute the XOR of the first window of size `k`.
 
-   * Remove the leftmost element using XOR.
-   * Add the new element entering the window.
-5. XOR automatically adjusts because XORing the same value twice cancels it.
-6. After each move, I update the maximum XOR.
-7. After the loop ends, I return the maximum value found.
+Example
 
-This is fast, clean, and perfect for large inputs.
+arr = [2,5,8,1,1,3]
+k = 3
 
----
+First window
+
+2 ^ 5 ^ 8 = 15
+
+This becomes our current XOR and maximum XOR.
+
+Next we move the window one step to the right.
+
+Window becomes
+
+[5,8,1]
+
+We remove the outgoing element 2
+
+currentXor = 15 ^ 2
+
+Then add the new element 1
+
+currentXor = result ^ 1
+
+Now this gives the XOR for the new window.
+
+We compare this value with the maximum XOR and update if needed.
+
+This process repeats for every step until the end of the array.
+
+Because XOR allows quick removal and addition of elements, we do not need to recompute the XOR from scratch.
 
 ## Examples
 
-**Input**
+Example 1
 
-```bash
-arr = [2, 5, 8, 1, 1, 3], k = 3
-```
+Input
 
-**Output**
+arr = [2, 5, 8, 1, 1, 3]
+k = 3
 
-```bash
+Output
+
 15
-```
 
-**Explanation**
-2 ^ 5 ^ 8 = 15, which is the maximum possible.
+Example 2
 
----
+Input
 
-**Input**
+arr = [1, 2, 4, 5, 6]
+k = 2
 
-```bash
-arr = [1, 2, 4, 5, 6], k = 2
-```
+Output
 
-**Output**
-
-```bash
 6
-```
 
----
+Explanation
+
+The subarray [2,4] produces XOR 6 which is the maximum.
 
 ## How to use / Run locally
 
-1. Clone the repository
-2. Open the file in your preferred language
-3. Compile or run using standard commands
+1. Copy the code for your preferred programming language.
+2. Create a file such as `solution.cpp`, `Solution.java`, `solution.js`, or `solution.py`.
+3. Paste the code into the file.
+4. Compile and run using your language compiler.
 
-   * C++: g++ file.cpp
-   * Java: javac Solution.java
-   * JavaScript: node file.js
-   * Python: python3 file.py
+Example C++
 
----
+```
+g++ solution.cpp
+./a.out
+```
+
+Example Python
+
+```
+python solution.py
+```
 
 ## Notes & Optimizations
 
-* This solution avoids recalculating XOR for every subarray.
-* Sliding window makes it optimal.
-* Works efficiently even for very large arrays.
-* This is the best possible approach for this problem.
-
----
+* Sliding window allows constant time updates.
+* XOR properties make removal and addition efficient.
+* Avoid recomputing XOR for every subarray.
+* This keeps the solution linear time even for very large arrays.
 
 ## Author
 
-* **Md Aarzoo Islam**
-  [https://bento.me/withaarzoo](https://bento.me/withaarzoo)
+* [Md Aarzoo Islam](https://bento.me/withaarzoo)
