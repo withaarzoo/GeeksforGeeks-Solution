@@ -10,74 +10,116 @@
 * [Operations & Behavior Summary](#operations--behavior-summary)
 * [Complexity](#complexity)
 * [Multi-language Solutions](#multi-language-solutions)
-
-  * [C++](#c)
-  * [Java](#java)
-  * [JavaScript](#javascript)
-  * [Python3](#python3)
-  * [Go](#go)
-* [Step-by-step Detailed Explanation](#step-by-step-detailed-explanation-c-java-javascript-python3-go)
+* [Step-by-step Detailed Explanation (C++, Java, JavaScript, Python3)](#step-by-step-detailed-explanation-c-java-javascript-python3)
 * [Examples](#examples)
-* [How to use / Run locally](#how-to-use--run-locally)
+* [How to Use / Run Locally](#how-to-use--run-locally)
 * [Notes & Optimizations](#notes--optimizations)
 * [Author](#author)
 
+---
+
 ## Problem Summary
 
-Given a string `s` consisting of uppercase English letters and an integer `k`, I can perform at most `k` operations. In one operation, I may replace any character with any other uppercase English letter.
+In this problem, I am given a string `s` made up of uppercase English letters and an integer `k`.
 
-My task is to find the length of the longest substring that can be converted into a string with all identical characters using at most `k` replacements.
+I am allowed to perform at most `k` operations. In each operation, I can change any character in the string to any other uppercase character.
+
+My goal is to find the **length of the longest substring** that can be converted into a string with all identical characters using at most `k` changes.
+
+So basically, I need to find a substring where I can replace a few characters (up to `k`) and make the whole substring consist of the same character.
+
+This is a classic **sliding window + frequency counting** problem.
+
+---
 
 ## Constraints
 
-* `1 <= n, k <= 10^5`
-* `s` contains only uppercase English letters.
+* `1 ≤ n ≤ 10^5`
+* `0 ≤ k ≤ 10^5`
+* String `s` contains only uppercase English letters (`A–Z`)
+
+---
 
 ## Intuition
 
-I thought about this problem as a sliding window problem.
+When I first looked at this problem, I thought about brute force — checking every substring. But that would be too slow.
 
-For any substring, if I want to make all characters the same, then I should keep the character that appears most often and replace all other characters.
+Then I noticed something important:
 
-So for a window of size `window_length`:
+If I want all characters in a substring to be the same, I should try to convert everything into the **most frequent character** in that substring.
 
-* `most_frequent_char_count` = count of the most common character in the window
-* `changes_needed = window_length - most_frequent_char_count`
+So the number of changes required becomes:
 
-If `changes_needed <= k`, then the window is valid.
+```
+window size - frequency of most common character
+```
 
-That means I only need to keep expanding the window while it stays valid, and shrink it when it becomes invalid.
+If this value is less than or equal to `k`, then the substring is valid.
+
+That gave me the idea to use a **sliding window**.
+
+---
 
 ## Approach
 
-1. Use two pointers, `left` and `right`, to represent a sliding window.
-2. Keep a frequency array of size `26` because the string contains only uppercase English letters.
-3. As I move `right`, I include the current character in the window and update its frequency.
-4. I track `maxFreq`, which is the highest frequency of any character in the current window.
-5. If `window_size - maxFreq > k`, then the window needs more than `k` changes, so I move `left` forward and shrink the window.
-6. After every valid window update, I store the maximum window length.
+Here’s how I solved it step by step:
 
-This works efficiently because every character enters and leaves the window at most once.
+1. I use two pointers: `left` and `right` to represent a window.
+2. I maintain a frequency array to count characters inside the window.
+3. I keep track of the **maximum frequency** of any character in the current window.
+4. I expand the window by moving `right`.
+5. At each step, I check:
+
+   ```
+   (window size - max frequency) > k
+   ```
+
+   If true, I shrink the window from the left.
+6. I keep updating the maximum valid window size.
+
+This ensures I always maintain the longest valid substring.
+
+---
 
 ## Data Structures Used
 
-* **Array of size 26**: To store frequencies of uppercase letters.
-* **Two pointers**: To maintain the sliding window.
-* **Integer variables**: To store `left`, `maxFreq`, and the best answer.
+* **Array (size 26)**
+  Used to store frequency of each uppercase character.
+
+* **Two pointers (left and right)**
+  Used for implementing the sliding window.
+
+* **Integer variables**
+  Used to track max frequency and result.
+
+---
 
 ## Operations & Behavior Summary
 
-* Add one character to the window by moving `right`.
-* Update its frequency.
-* Recompute the current best repeating character count.
-* Check whether the window needs more than `k` replacements.
-* If yes, remove characters from the left until the window becomes valid again.
-* Record the maximum valid window size.
+* Start with an empty window
+* Expand window to the right
+* Update character frequency
+* Track the most frequent character
+* If too many changes are needed, shrink the window
+* Keep updating the maximum valid window length
+
+This process continues until the entire string is processed.
+
+---
 
 ## Complexity
 
-* **Time Complexity:** `O(n)` where `n` is the length of the string. I process each character with the sliding window at most a constant number of times.
-* **Space Complexity:** `O(1)` because I only use a fixed-size frequency array of 26 elements.
+| Type             | Complexity |
+| ---------------- | ---------- |
+| Time Complexity  | O(n)       |
+| Space Complexity | O(1)       |
+
+**Explanation:**
+
+* I traverse the string only once using the sliding window.
+* The frequency array size is fixed (26), so space is constant.
+
+---
 
 ## Multi-language Solutions
 
@@ -87,24 +129,27 @@ This works efficiently because every character enters and leaves the window at m
 class Solution {
   public:
     int longestSubstr(string& s, int k) {
-        vector<int> freq(26, 0);
-        int left = 0;
-        int maxFreq = 0;
-        int ans = 0;
+        vector<int> freq(26, 0); // frequency of characters
+        int left = 0, maxFreq = 0, maxLen = 0;
 
-        for (int right = 0; right < (int)s.size(); right++) {
+        for (int right = 0; right < s.size(); right++) {
+            // Increase frequency of current character
             freq[s[right] - 'A']++;
+
+            // Update max frequency in window
             maxFreq = max(maxFreq, freq[s[right] - 'A']);
 
+            // If changes needed > k, shrink window
             while ((right - left + 1) - maxFreq > k) {
                 freq[s[left] - 'A']--;
                 left++;
             }
 
-            ans = max(ans, right - left + 1);
+            // Update max length
+            maxLen = max(maxLen, right - left + 1);
         }
 
-        return ans;
+        return maxLen;
     }
 };
 ```
@@ -115,24 +160,22 @@ class Solution {
 class Solution {
     public int longestSubstr(String s, int k) {
         int[] freq = new int[26];
-        int left = 0;
-        int maxFreq = 0;
-        int ans = 0;
+        int left = 0, maxFreq = 0, maxLen = 0;
 
         for (int right = 0; right < s.length(); right++) {
-            int idx = s.charAt(right) - 'A';
-            freq[idx]++;
-            maxFreq = Math.max(maxFreq, freq[idx]);
+            freq[s.charAt(right) - 'A']++;
+
+            maxFreq = Math.max(maxFreq, freq[s.charAt(right) - 'A']);
 
             while ((right - left + 1) - maxFreq > k) {
                 freq[s.charAt(left) - 'A']--;
                 left++;
             }
 
-            ans = Math.max(ans, right - left + 1);
+            maxLen = Math.max(maxLen, right - left + 1);
         }
 
-        return ans;
+        return maxLen;
     }
 }
 ```
@@ -142,25 +185,23 @@ class Solution {
 ```javascript
 class Solution {
     longestSubstr(s, k) {
-        const freq = new Array(26).fill(0);
-        let left = 0;
-        let maxFreq = 0;
-        let ans = 0;
+        let freq = new Array(26).fill(0);
+        let left = 0, maxFreq = 0, maxLen = 0;
 
         for (let right = 0; right < s.length; right++) {
-            const idx = s.charCodeAt(right) - 65;
-            freq[idx]++;
-            maxFreq = Math.max(maxFreq, freq[idx]);
+            freq[s.charCodeAt(right) - 65]++;
+
+            maxFreq = Math.max(maxFreq, freq[s.charCodeAt(right) - 65]);
 
             while ((right - left + 1) - maxFreq > k) {
                 freq[s.charCodeAt(left) - 65]--;
                 left++;
             }
 
-            ans = Math.max(ans, right - left + 1);
+            maxLen = Math.max(maxLen, right - left + 1);
         }
 
-        return ans;
+        return maxLen;
     }
 }
 ```
@@ -173,151 +214,192 @@ class Solution:
         freq = [0] * 26
         left = 0
         maxFreq = 0
-        ans = 0
+        maxLen = 0
 
         for right in range(len(s)):
-            idx = ord(s[right]) - ord('A')
-            freq[idx] += 1
-            maxFreq = max(maxFreq, freq[idx])
+            freq[ord(s[right]) - ord('A')] += 1
+
+            maxFreq = max(maxFreq, freq[ord(s[right]) - ord('A')])
 
             while (right - left + 1) - maxFreq > k:
                 freq[ord(s[left]) - ord('A')] -= 1
                 left += 1
 
-            ans = max(ans, right - left + 1)
+            maxLen = max(maxLen, right - left + 1)
 
-        return ans
+        return maxLen
 ```
 
-### Go
+---
 
-```go
-package main
+## Step-by-step Detailed Explanation (C++, Java, JavaScript, Python3)
 
-func longestSubstr(s string, k int) int {
-    freq := make([]int, 26)
-    left := 0
-    maxFreq := 0
-    ans := 0
+The logic is the same across all languages, only syntax changes.
 
-    for right := 0; right < len(s); right++ {
-        idx := int(s[right] - 'A')
-        freq[idx]++
-        if freq[idx] > maxFreq {
-            maxFreq = freq[idx]
-        }
+1. I start with two pointers:
 
-        for (right-left+1)-maxFreq > k {
-            freq[int(s[left]-'A')]--
-            left++
-        }
+   * `left = 0`
+   * `right = 0`
 
-        if right-left+1 > ans {
-            ans = right - left + 1
-        }
-    }
+2. I maintain a frequency array of size 26 to count characters.
 
-    return ans
-}
-```
+3. Every time I move `right`, I:
 
-## Step-by-step Detailed Explanation (C++, Java, JavaScript, Python3, Go)
+   * Add the current character to the frequency array
+   * Update the maximum frequency seen so far
 
-### 1. I create a frequency array
+4. Then I check if the window is valid:
 
-I use an array of size 26 because the string contains only uppercase letters from `A` to `Z`. This makes counting fast and simple.
+   ```
+   window size - max frequency <= k
+   ```
 
-### 2. I expand the window from the right
+5. If it becomes invalid:
 
-Every time I move `right`, I include one more character into the current substring.
+   * I move `left` forward
+   * Decrease frequency of the character being removed
 
-### 3. I update the highest frequency
+6. I keep updating the result with the maximum window size found.
 
-I keep track of the most repeated character inside the current window. This is important because the best strategy is to convert all other characters into that character.
+Important detail:
 
-### 4. I check whether the window is valid
+* I do not recompute max frequency when shrinking the window.
+* This keeps the solution efficient.
 
-I calculate:
-
-`window_size - maxFreq`
-
-This tells me how many changes are needed.
-
-If this value is greater than `k`, then the window is not valid.
-
-### 5. I shrink the window from the left
-
-When the window becomes invalid, I remove the leftmost character and move `left` forward until the window becomes valid again.
-
-### 6. I update the answer
-
-At every valid step, I compare the current window size with my best answer and keep the larger one.
-
-### 7. Why this works
-
-This works because I never need to check all substrings manually. The sliding window naturally grows and shrinks while keeping track of the best possible valid substring.
+---
 
 ## Examples
 
 ### Example 1
 
-**Input:** `s = "ABBA", k = 2`
+Input:
 
-**Output:** `4`
+```
+s = "ABBA", k = 2
+```
 
-**Explanation:**
-I can replace both `A` characters with `B`, so the whole string becomes `BBBB`.
+Output:
+
+```
+4
+```
+
+Explanation:
+
+* I can convert both 'A' into 'B'
+* Final string becomes "BBBB"
+
+---
 
 ### Example 2
 
-**Input:** `s = "ADBD", k = 1`
+Input:
 
-**Output:** `3`
+```
+s = "ADBD", k = 1
+```
 
-**Explanation:**
-I can replace `B` with `D`, so the string becomes `ADDD`. The longest repeating substring length is `3`.
+Output:
 
-## How to use / Run locally
+```
+3
+```
+
+Explanation:
+
+* Change one 'B' to 'D'
+* Substring "DDD" of length 3 is possible
+
+---
+
+### Example 3
+
+Input:
+
+```
+s = "AABABBA", k = 1
+```
+
+Output:
+
+```
+4
+```
+
+Explanation:
+
+* Longest valid substring is "AABA" or "ABBA"
+
+---
+
+## How to Use / Run Locally
 
 ### C++
 
-```bash
-g++ -std=c++17 -O2 -o main main.cpp
-./main
-```
+1. Save file as `solution.cpp`
+2. Compile:
+
+   ```
+   g++ solution.cpp -o output
+   ```
+
+3. Run:
+
+   ```
+   ./output
+   ```
+
+---
 
 ### Java
 
-```bash
-javac Main.java
-java Main
-```
+1. Save file as `Solution.java`
+2. Compile:
+
+   ```
+   javac Solution.java
+   ```
+
+3. Run:
+
+   ```
+   java Solution
+   ```
+
+---
 
 ### JavaScript
 
-```bash
-node main.js
-```
+1. Save file as `solution.js`
+2. Run:
+
+   ```
+   node solution.js
+   ```
+
+---
 
 ### Python3
 
-```bash
-python3 main.py
-```
+1. Save file as `solution.py`
+2. Run:
 
-### Go
+   ```
+   python3 solution.py
+   ```
 
-```bash
-go run main.go
-```
+---
 
 ## Notes & Optimizations
 
-* I use a fixed-size array of 26 elements instead of a map, which is faster.
-* The sliding window ensures that each character is processed efficiently.
-* The solution is already optimal for the given constraints.
-* The variable `maxFreq` stores the best repeating character count in the current window, which helps avoid extra work.
+* This problem is a classic example of the **sliding window technique**.
+* Always try to maximize the window instead of checking all substrings.
+* Tracking the **maximum frequency** is the key optimization.
+* Even if max frequency becomes slightly outdated, the algorithm still works correctly.
+* This approach avoids nested loops and reduces time complexity to linear.
+
+---
 
 ## Author
 
-* [Md Aarzoo Islam](https://www.instagram.com/code.with.aarzoo/)
+[Md Aarzoo Islam](https://www.instagram.com/code.with.aarzoo/)
