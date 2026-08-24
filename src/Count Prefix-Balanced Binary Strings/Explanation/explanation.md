@@ -67,9 +67,9 @@ That means I do not need to generate all possible binary strings.
 
 The number of valid sequences is the `n`th Catalan number:
 
-[
+```math
 C_n = \frac{(2n)!}{n!(n+1)!}
-]
+```
 
 So the problem becomes a modular Catalan number calculation.
 
@@ -77,21 +77,21 @@ So the problem becomes a modular Catalan number calculation.
 
 I use the Catalan number formula:
 
-[
+```math
 C_n = \frac{(2n)!}{n! \times (n+1)!}
-]
+````
 
 Since:
 
-[
+```math
 (n+1)! = (n+1) \times n!
-]
+````
 
 I can also write it as:
 
-[
+```math
 C_n = \frac{(2n)!}{n! \times n! \times (n+1)}
-]
+````
 
 Then I follow these steps:
 
@@ -104,9 +104,9 @@ Then I follow these steps:
 
 Because the modulo is prime, I use Fermat's Little Theorem to calculate modular inverses:
 
-[
+```math
 x^{-1} = x^{MOD-2} \pmod{MOD}
-]
+````
 
 I use binary exponentiation to calculate these powers efficiently.
 
@@ -364,9 +364,9 @@ Direct division does not work correctly after taking modulo. Instead, I multiply
 
 For a prime modulo `MOD`, Fermat's Little Theorem tells me that:
 
-[
+```math
 x^{-1} = x^{MOD-2} \pmod{MOD}
-]
+````
 
 So I calculate the modular inverse using fast binary exponentiation.
 
@@ -378,10 +378,10 @@ Then I multiply by the inverse of `n + 1`.
 
 The final expression is:
 
-[
+```math
 (2n)! \times (n!)^{-1} \times (n!)^{-1} \times (n+1)^{-1}
 \pmod{10^9+7}
-]
+````
 
 ### C++
 
@@ -464,9 +464,9 @@ Every prefix also contains at least as many `1`s as `0`s.
 
 Using the Catalan formula:
 
-[
+```math
 C_2 = \frac{4!}{2! \times 3!} = 2
-]
+````
 
 ---
 
@@ -496,9 +496,9 @@ n = 3
 
 Using the Catalan number formula:
 
-[
+```math
 C_3 = \frac{6!}{3! \times 4!} = 5
-]
+```
 
 So there are `5` prefix-balanced binary strings.
 
